@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
+		<link rel="stylesheet" href="assets/css/style.min.css" />
+		<title>Presale MNTN Token</title>
+	</head>
+	<body>
+		<div class="header">
+			<div class="logo">
+				<img src="assets/img/logo.png" alt="" />
+				<h3>Mountain Token . Finance</h3>
+			</div>
+			<div class="nav">
+				<ul>
+					<li><a target="_blank" href="https://www.climbtoken.finance/">About</a></li>
+					<li><a target="_blank" href="https://www.climbtoken.finance/presale-climb-token">Pre Sale Info</a></li>
+					<li><button id="btn_connect">Connect</button></li>
+				</ul>
+				<p>Tokens in wallet: <span id="wallet_balance">0</span> MNTN</p>
+			</div>
+		</div>
+		<div class="content">
+			<h3>Make your crypto MNTN</h3>
+			<h2>Presale</h2>
+			<p>Buy MNTN tokens with bnb</p>
+			<div class="form-inputs">
+				<div class="form-field">
+					<img src="assets/img/bnb.png" alt="" />
+					<input id="inp_bnb" type="text" maxlength="6" />
+				</div>
+				<i class="fas fa-chevron-right"></i>
+				<div class="form-field">
+					<img src="assets/img/climb.png" alt="" />
+					<input id="inp_climb" type="text" maxlength="6" />
+				</div>
+			</div>
+			<button id="btn_swap">Swap</button>
+			<div class="status">
+				<p><span id="contract_balance">0</span> MNTN Sold</p>
+				<div class="prog">
+					<div class="full"></div>
+					<div class="percent"></div>
+				</div>
+				<div class="values">
+					<p>0 MNTN</p>
+					<p>20,000 MNTN</p>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<ul>
+				<li>
+					<a href="https://medium.com/@climbtoken" target="_blank"><i class="fab fa-medium-m"></i></a>
+				</li>
+				<li>
+					<a href="https://t.me/climbtoken" target="_blank"><i class="fab fa-telegram-plane"></i></a>
+				</li>
+				<li>
+					<a href="https://twitter.com/climbtoken" target="_blank"><i class="fab fa-twitter"></i></a>
+				</li>
+				<li>
+					<a href="https://climbtoken.gitbook.io/climb-token/" target="_blank"><img src="assets/img/gitbook.png" /></a>
+				</li>
+				<li>
+					<a href="mailto:info@climbtoken.finance"><i class="fas fa-envelope"></i></a>
+				</li>
+			</ul>
+		</div>
+		<img class="tipo" src="assets/img/tipo.png" alt="" />
+
+		<div class="loader active">
+			<img src="assets/img/loader.png" alt="" />
+			<p>Loading...</p>
+		</div>
+		<div class="alert_list"></div>
+
+		<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+		<script src="assets/script/script.min.js"></script>
+	</body>
+</html>
