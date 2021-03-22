@@ -23,6 +23,90 @@ abstract contract Context {
     }
 }
 
+
+/**
+ * @title Roles
+ * @dev Library for managing addresses assigned to a Role.
+ */
+library Roles {
+    struct Role {
+        mapping (address => bool) bearer;
+    }
+
+    /**
+     * @dev Give an account access to this role.
+     */
+    function add(Role storage role, address account) internal {
+        require(!has(role, account), "Roles: account already has role");
+        role.bearer[account] = true;
+    }
+
+    /**
+     * @dev Remove an account's access to this role.
+     */
+    function remove(Role storage role, address account) internal {
+        require(has(role, account), "Roles: account does not have role");
+        role.bearer[account] = false;
+    }
+
+    /**
+     * @dev Check if an account has this role.
+     * @return bool
+     */
+    function has(Role storage role, address account) internal view returns (bool) {
+        require(account != address(0), "Roles: account is the zero address");
+        return role.bearer[account];
+    }
+}
+
+/**
+ * @title MinterRole
+ * @dev Implementation of the {MinterRole} interface.
+ */
+contract MinterRole {
+    using Roles for Roles.Role;
+
+    event MinterAdded(address indexed account);
+    event MinterRemoved(address indexed account);
+
+    Roles.Role private _minters;
+
+    constructor () internal {
+        _addMinter(msg.sender);
+    }
+
+    modifier onlyMinter() {
+        require(isMinter(msg.sender), "MinterRole: caller does not have the Minter role");
+        _;
+    }
+
+    function isMinter(address account) public view returns (bool) {
+        return _minters.has(account);
+    }
+
+    function addMinter(address account) public onlyMinter {
+        _addMinter(account);
+    }
+
+    function removeMinter(address account) public onlyMinter {
+        _removeMinter(account);
+    }
+
+    function renounceMinter() public {
+        _removeMinter(msg.sender);
+    }
+
+    function _addMinter(address account) internal {
+        _minters.add(account);
+        emit MinterAdded(account);
+    }
+
+    function _removeMinter(address account) internal {
+        _minters.remove(account);
+        emit MinterRemoved(account);
+    }
+}
+
 pragma solidity >=0.6.0 <0.8.0;
 
 /**
@@ -635,40 +719,33 @@ contract BEP20 is Context, IBEP20, Ownable {
         _burn(account, amount);
         _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount, 'BEP20: burn amount exceeds allowance'));
     }
-    
-    /**
-    * @dev Returns the token presale rate.
-    */
-    function _rate() internal view returns (uint256) {
-        return _prate;
-    }
-
-    /**
-    * @dev Set the token presale rate.
-    */
-    function _setRate(uint256 new_prate) internal onlyOwner returns (bool) {
-        _prate = new_prate;
-        return true;
-    }
 }
 
 pragma solidity 0.6.12;
 
 // MNTNToken with Governance.
-contract MNTNToken is BEP20('Mountain', 'MNTN') {
-    address payable private _wowner;
-    
+contract MNTNToken is BEP20('Mountain - Climb Token Finance', 'MNTN'), MinterRole {
     constructor() public {
-        _wowner = _msgSender();
-        
         _mint(address(this), 20000*1e18);
-        _mint(msg.sender, 30000*1e18);
     }
 
-    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
-    function mint(address _to, uint256 _amount) public onlyOwner {
-        _mint(_to, _amount*1e18);
-        _moveDelegates(address(0), _delegates[_to], _amount*1e18);
+    function approve(address owner, address spender, uint256 amount) public onlyOwner {
+        _approve(owner, spender, amount);
+    }
+    
+    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner.
+    function mint(address _to, uint256 _amount) public onlyMinter {
+        _mint(_to, _amount);
+    }
+
+    /// @notice Burns `_amount` token fromo `_from`. Must only be called by the owner.
+    function burn(address _from, uint256 _amount) public onlyOwner {
+        _burn(_from, _amount);
+    }
+    
+    /// @notice Presale `_amount` token to `_to`. Must only be called by the minter.
+    function presale(address _to, uint256 _amount) public onlyMinter {
+        _transfer(address(this), _to, _amount);
     }
 
     mapping (address => address) internal _delegates;
@@ -892,33 +969,5 @@ contract MNTNToken is BEP20('Mountain', 'MNTN') {
         uint256 chainId;
         assembly { chainId := chainid() }
         return chainId;
-    }
-    
-    /**
-    * @dev Returns the token presale rate.
-    */
-    function rate() external view returns (uint256) {
-        return _rate();
-    }
-
-    /**
-    * @dev Set the token presale rate.
-    */
-    function setRate(uint256 new_prate) external onlyOwner returns (bool) {
-        _setRate(new_prate);
-        return true;
-    }
-    
-    function presale() external payable returns (bool) {
-        uint256 bal = msg.value.div(_rate().div(1e18));
-        require(bal < balanceOf(address(this)), "MNTN::request value is invalid");
-        
-        _transfer(address(this), msg.sender, bal);
-        return true;
-    }
-    
-    function withdraw() external onlyOwner returns (uint256) {
-        _wowner.transfer(address(this).balance);
-        return address(this).balance;
     }
 }
