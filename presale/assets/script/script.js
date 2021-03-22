@@ -1,7 +1,8 @@
 window.addEventListener('load', async function () {
-	const tokenAddress = '0x3f6ef940f995e6d3219b541cf5b7c40da337aecd'
+	const tokenContract = '0xC50068E3250469B97693809f936d1e6FC4695141'
+	const presaleContract = '0x772bF480980A8d5c4a9c507962C8A7d6B86A4EFa'
 	const maxSupply = 20000
-	let tokenRate = 1
+	let tokenRate = 0.037
 
 	let connected = null
 	let chainID = null
@@ -10,696 +11,297 @@ window.addEventListener('load', async function () {
 
 	let tokenABI = [
 		{
-			inputs: [],
-			stateMutability: 'nonpayable',
-			type: 'constructor',
+			"inputs": [
+				{
+					"internalType": "contract MNTNToken",
+					"name": "_token",
+					"type": "address"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "constructor"
 		},
 		{
-			anonymous: false,
-			inputs: [
+			"anonymous": false,
+			"inputs": [
 				{
-					indexed: true,
-					internalType: 'address',
-					name: 'owner',
-					type: 'address',
+					"indexed": true,
+					"internalType": "address",
+					"name": "user",
+					"type": "address"
 				},
 				{
-					indexed: true,
-					internalType: 'address',
-					name: 'spender',
-					type: 'address',
-				},
-				{
-					indexed: false,
-					internalType: 'uint256',
-					name: 'value',
-					type: 'uint256',
-				},
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
 			],
-			name: 'Approval',
-			type: 'event',
+			"name": "Deposited",
+			"type": "event"
 		},
 		{
-			inputs: [
+			"anonymous": false,
+			"inputs": [
 				{
-					internalType: 'address',
-					name: 'spender',
-					type: 'address',
+					"indexed": true,
+					"internalType": "address",
+					"name": "previousOwner",
+					"type": "address"
 				},
 				{
-					internalType: 'uint256',
-					name: 'amount',
-					type: 'uint256',
-				},
+					"indexed": true,
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
 			],
-			name: 'approve',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
-			],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"name": "OwnershipTransferred",
+			"type": "event"
 		},
 		{
-			inputs: [
+			"anonymous": false,
+			"inputs": [
 				{
-					internalType: 'address',
-					name: 'spender',
-					type: 'address',
+					"indexed": false,
+					"internalType": "address",
+					"name": "token",
+					"type": "address"
 				},
 				{
-					internalType: 'uint256',
-					name: 'subtractedValue',
-					type: 'uint256',
-				},
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
 			],
-			name: 'decreaseAllowance',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
-			],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"name": "Recovered",
+			"type": "event"
 		},
 		{
-			inputs: [
+			"inputs": [
 				{
-					internalType: 'address',
-					name: 'delegatee',
-					type: 'address',
-				},
+					"internalType": "address",
+					"name": "account",
+					"type": "address"
+				}
 			],
-			name: 'delegate',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"name": "balanceOf",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'delegatee',
-					type: 'address',
-				},
-				{
-					internalType: 'uint256',
-					name: 'nonce',
-					type: 'uint256',
-				},
-				{
-					internalType: 'uint256',
-					name: 'expiry',
-					type: 'uint256',
-				},
-				{
-					internalType: 'uint8',
-					name: 'v',
-					type: 'uint8',
-				},
-				{
-					internalType: 'bytes32',
-					name: 'r',
-					type: 'bytes32',
-				},
-				{
-					internalType: 'bytes32',
-					name: 's',
-					type: 'bytes32',
-				},
-			],
-			name: 'delegateBySig',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"inputs": [],
+			"name": "deposit",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
 		},
 		{
-			anonymous: false,
-			inputs: [
+			"inputs": [
 				{
-					indexed: true,
-					internalType: 'address',
-					name: 'delegator',
-					type: 'address',
-				},
-				{
-					indexed: true,
-					internalType: 'address',
-					name: 'fromDelegate',
-					type: 'address',
-				},
-				{
-					indexed: true,
-					internalType: 'address',
-					name: 'toDelegate',
-					type: 'address',
-				},
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
 			],
-			name: 'DelegateChanged',
-			type: 'event',
+			"name": "deposits",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			anonymous: false,
-			inputs: [
+			"inputs": [],
+			"name": "getDepositAmount",
+			"outputs": [
 				{
-					indexed: true,
-					internalType: 'address',
-					name: 'delegate',
-					type: 'address',
-				},
-				{
-					indexed: false,
-					internalType: 'uint256',
-					name: 'previousBalance',
-					type: 'uint256',
-				},
-				{
-					indexed: false,
-					internalType: 'uint256',
-					name: 'newBalance',
-					type: 'uint256',
-				},
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
 			],
-			name: 'DelegateVotesChanged',
-			type: 'event',
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			inputs: [
+			"inputs": [],
+			"name": "getRewardTokenCount",
+			"outputs": [
 				{
-					internalType: 'address',
-					name: 'spender',
-					type: 'address',
-				},
-				{
-					internalType: 'uint256',
-					name: 'addedValue',
-					type: 'uint256',
-				},
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
 			],
-			name: 'increaseAllowance',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
-			],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			inputs: [
+			"inputs": [],
+			"name": "getWithdrawAddress",
+			"outputs": [
 				{
-					internalType: 'address',
-					name: '_to',
-					type: 'address',
-				},
-				{
-					internalType: 'uint256',
-					name: '_amount',
-					type: 'uint256',
-				},
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
 			],
-			name: 'mint',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			inputs: [
+			"inputs": [],
+			"name": "owner",
+			"outputs": [
 				{
-					internalType: 'uint256',
-					name: 'amount',
-					type: 'uint256',
-				},
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
 			],
-			name: 'mint',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
-			],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			anonymous: false,
-			inputs: [
+			"inputs": [
 				{
-					indexed: true,
-					internalType: 'address',
-					name: 'previousOwner',
-					type: 'address',
+					"internalType": "address",
+					"name": "tokenAddress",
+					"type": "address"
 				},
 				{
-					indexed: true,
-					internalType: 'address',
-					name: 'newOwner',
-					type: 'address',
-				},
+					"internalType": "uint256",
+					"name": "tokenAmount",
+					"type": "uint256"
+				}
 			],
-			name: 'OwnershipTransferred',
-			type: 'event',
+			"name": "recoverBEP20",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
 		},
 		{
-			inputs: [],
-			name: 'presale',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
-			],
-			stateMutability: 'payable',
-			type: 'function',
+			"inputs": [],
+			"name": "releaseFunds",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
 		},
 		{
-			inputs: [],
-			name: 'renounceOwnership',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"inputs": [],
+			"name": "renounceOwnership",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
 		},
 		{
-			inputs: [
+			"inputs": [],
+			"name": "rewardTokenCount",
+			"outputs": [
 				{
-					internalType: 'uint256',
-					name: 'new_prate',
-					type: 'uint256',
-				},
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
 			],
-			name: 'setRate',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
-			],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			inputs: [
+			"inputs": [
 				{
-					internalType: 'address',
-					name: 'recipient',
-					type: 'address',
-				},
-				{
-					internalType: 'uint256',
-					name: 'amount',
-					type: 'uint256',
-				},
+					"internalType": "uint256",
+					"name": "_count",
+					"type": "uint256"
+				}
 			],
-			name: 'transfer',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
-			],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"name": "setRewardTokenCount",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
 		},
 		{
-			anonymous: false,
-			inputs: [
+			"inputs": [
 				{
-					indexed: true,
-					internalType: 'address',
-					name: 'from',
-					type: 'address',
-				},
-				{
-					indexed: true,
-					internalType: 'address',
-					name: 'to',
-					type: 'address',
-				},
-				{
-					indexed: false,
-					internalType: 'uint256',
-					name: 'value',
-					type: 'uint256',
-				},
+					"internalType": "address payable",
+					"name": "_address",
+					"type": "address"
+				}
 			],
-			name: 'Transfer',
-			type: 'event',
+			"name": "setWithdrawAddress",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
 		},
 		{
-			inputs: [
+			"inputs": [],
+			"name": "token",
+			"outputs": [
 				{
-					internalType: 'address',
-					name: 'sender',
-					type: 'address',
-				},
-				{
-					internalType: 'address',
-					name: 'recipient',
-					type: 'address',
-				},
-				{
-					internalType: 'uint256',
-					name: 'amount',
-					type: 'uint256',
-				},
+					"internalType": "contract MNTNToken",
+					"name": "",
+					"type": "address"
+				}
 			],
-			name: 'transferFrom',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
-			],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			inputs: [
+			"inputs": [],
+			"name": "totalDepositedBNBBalance",
+			"outputs": [
 				{
-					internalType: 'address',
-					name: 'newOwner',
-					type: 'address',
-				},
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
 			],
-			name: 'transferOwnership',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			inputs: [],
-			name: 'withdraw',
-			outputs: [
+			"inputs": [
 				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
 			],
-			stateMutability: 'nonpayable',
-			type: 'function',
+			"name": "transferOwnership",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
 		},
 		{
-			inputs: [
+			"inputs": [],
+			"name": "withdrwAddress",
+			"outputs": [
 				{
-					internalType: 'address',
-					name: 'owner',
-					type: 'address',
-				},
-				{
-					internalType: 'address',
-					name: 'spender',
-					type: 'address',
-				},
+					"internalType": "address payable",
+					"name": "",
+					"type": "address"
+				}
 			],
-			name: 'allowance',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
+			"stateMutability": "view",
+			"type": "function"
 		},
 		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'account',
-					type: 'address',
-				},
-			],
-			name: 'balanceOf',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: '',
-					type: 'address',
-				},
-				{
-					internalType: 'uint32',
-					name: '',
-					type: 'uint32',
-				},
-			],
-			name: 'checkpoints',
-			outputs: [
-				{
-					internalType: 'uint32',
-					name: 'fromBlock',
-					type: 'uint32',
-				},
-				{
-					internalType: 'uint256',
-					name: 'votes',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'decimals',
-			outputs: [
-				{
-					internalType: 'uint8',
-					name: '',
-					type: 'uint8',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'delegator',
-					type: 'address',
-				},
-			],
-			name: 'delegates',
-			outputs: [
-				{
-					internalType: 'address',
-					name: '',
-					type: 'address',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'DELEGATION_TYPEHASH',
-			outputs: [
-				{
-					internalType: 'bytes32',
-					name: '',
-					type: 'bytes32',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'DOMAIN_TYPEHASH',
-			outputs: [
-				{
-					internalType: 'bytes32',
-					name: '',
-					type: 'bytes32',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'account',
-					type: 'address',
-				},
-			],
-			name: 'getCurrentVotes',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getOwner',
-			outputs: [
-				{
-					internalType: 'address',
-					name: '',
-					type: 'address',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'account',
-					type: 'address',
-				},
-				{
-					internalType: 'uint256',
-					name: 'blockNumber',
-					type: 'uint256',
-				},
-			],
-			name: 'getPriorVotes',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'name',
-			outputs: [
-				{
-					internalType: 'string',
-					name: '',
-					type: 'string',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: '',
-					type: 'address',
-				},
-			],
-			name: 'nonces',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: '',
-					type: 'address',
-				},
-			],
-			name: 'numCheckpoints',
-			outputs: [
-				{
-					internalType: 'uint32',
-					name: '',
-					type: 'uint32',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'owner',
-			outputs: [
-				{
-					internalType: 'address',
-					name: '',
-					type: 'address',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'rate',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'symbol',
-			outputs: [
-				{
-					internalType: 'string',
-					name: '',
-					type: 'string',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'totalSupply',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
+			"stateMutability": "payable",
+			"type": "receive"
+		}
 	]
 
 	const init = async () => {
@@ -708,21 +310,19 @@ window.addEventListener('load', async function () {
 		chainID = await window.ethereum.request({ method: 'eth_chainId' })
 		accounts = await window.ethereum.request({ method: 'eth_accounts' })
 
-		if (chainID == 97 && accounts.length > 0) {
+		if (chainID == 56 && accounts.length > 0) {
 			connected = true
 
 			window.web3 = new Web3(window.ethereum)
-			contract = new window.web3.eth.Contract(tokenABI, tokenAddress)
+			contract = new window.web3.eth.Contract(tokenABI, presaleContract)
 
 			contract.methods
-				.rate()
+				.getRewardTokenCount()
 				.call()
 				.then(function (rate) {
 					tokenRate = rate / 1e18
-					console.log(rate)
-					console.log(tokenRate)
 				})
-
+			
 			contract.methods
 				.balanceOf(accounts[0])
 				.call()
@@ -731,7 +331,7 @@ window.addEventListener('load', async function () {
 				})
 
 			contract.methods
-				.balanceOf(tokenAddress)
+				.balanceOf(tokenContract)
 				.call()
 				.then(function (balance) {
 					let percent = ((maxSupply - balance / 1e18) / maxSupply) * 100
@@ -754,8 +354,8 @@ window.addEventListener('load', async function () {
 
 	const connect = async () => {
 		let chainID = await window.ethereum.request({ method: 'eth_chainId' })
-		if (chainID != 97) {
-			toastr('Please change network as Binance Smart Chain Test Net.')
+		if (chainID != 56) {
+			toastr('Please change network as Binance Smart Chain.')
 			return
 		}
 
@@ -774,13 +374,13 @@ window.addEventListener('load', async function () {
 
 			if (balance_bnb >= 0.0001 * 1e18) {
 				contract.methods
-					.balanceOf(tokenAddress)
+					.balanceOf(tokenContract)
 					.call()
 					.then(async function (balance) {
 						if (+balance_climb <= +balance) {
 							contract.methods
-								.presale()
-								.send({ from: accounts[0], gas: 3000000, value: balance_bnb }, function (res) {
+								.deposit()
+								.send({ from: accounts[0], value: balance_bnb }, function (res) {
 									if (res != null) hideLoader()
 								})
 								.then(async function (res) {
