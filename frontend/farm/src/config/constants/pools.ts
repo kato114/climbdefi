@@ -11,7 +11,7 @@ const pools: PoolConfig[] = [
   //     56: '0x73feaa1eE314F8c655E354234017bE2193C9E24E',
   //   },
   //   poolCategory: PoolCategory.CORE,
-  //   projectLink: 'https://pancakeswap.finance/',
+  //   projectLink: 'http://mexchange.classic999.com/',
   //   harvest: true,
   //   tokenPerBlock: '10',
   //   sortOrder: 1,

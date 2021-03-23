@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import Container from './Container'
 
 const Page = styled(Container)`
-  height: calc(100vh - 120px);
   padding-top: 16px;
   padding-bottom: 16px;
 

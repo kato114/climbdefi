@@ -11,11 +11,18 @@
   "keywords": ["pancake", "default"],
   "tokens": [
     {
-      "name": "Goose Golden Egg",
-      "symbol": "EGG",
-      "address": "0xF952Fc3ca7325Cc27D15885d37117676d25BfdA6",
+      "name": "Mountain",
+      "symbol": "MNTN",
+      "address": "0xd671e710df199498097a3903ae0749a183130742",
       "chainId": 56,
       "decimals": 18
+    },
+    {
+      "name": "Climb Token",
+      "symbol": "CLIMB",
+      "address": "0x4945bc280aae4ce44f99ce1e4cbe58421714f45d",
+      "chainId": 56,
+      "decimals": 8
     },
     {
       "name": "AUTOv2",

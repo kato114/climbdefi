@@ -67,7 +67,7 @@ const ApyCalculatorModal: React.FC<ApyCalculatorModalProps> = ({
         </GridItem>
         <GridItem>
           <Text fontSize="12px" bold color="textSubtle" textTransform="uppercase" mb="20px">
-            {TranslateString(999, 'EGG per $1000')}
+            {TranslateString(999, 'MNTN per $1000')}
           </Text>
         </GridItem>
         {/* 1 day row */}
@@ -125,11 +125,6 @@ const ApyCalculatorModal: React.FC<ApyCalculatorModalProps> = ({
           'Calculated based on current rates. Compounding once daily. Rates are estimates provided for your convenience only, and by no means represent guaranteed returns.',
         )}
       </Description>
-      <Flex justifyContent="center">
-        <LinkExternal href={`https://exchange.pancakeswap.finance/#/add/${liquidityUrlPathParts}`}>
-          {TranslateString(999, 'Get')} {lpLabel}
-        </LinkExternal>
-      </Flex>
     </Modal>
   )
 }
